@@ -199,6 +199,9 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 	struct cpufreq_work_struct *cpu_work = NULL;
 	cpumask_var_t mask;
 
+	struct cpufreq_work_struct *cpu_work = NULL;
+	cpumask_var_t mask;
+
 	if (!cpu_active(policy->cpu)) {
 		pr_info("cpufreq: cpu %d is not active.\n", policy->cpu);
 		return -ENODEV;
@@ -207,7 +210,6 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
 		return -ENOMEM;
 #endif
-
 	mutex_lock(&per_cpu(cpufreq_suspend, policy->cpu).suspend_mutex);
 
 	if (per_cpu(cpufreq_suspend, policy->cpu).device_suspended) {
@@ -237,6 +239,11 @@ static int msm_cpufreq_target(struct cpufreq_policy *policy,
 	cpu_work->frequency = table[index].frequency;
 	cpu_work->status = -ENODEV;
 
+	cpu_work = &per_cpu(cpufreq_work, policy->cpu);
+	cpu_work->policy = policy;
+	cpu_work->frequency = table[index].frequency;
+	cpu_work->status = -ENODEV;
+
 	cpumask_clear(mask);
 	cpumask_set_cpu(policy->cpu, mask);
 	if (cpumask_equal(mask, &current->cpus_allowed)) {
@@ -258,6 +265,9 @@ done:
 #ifdef CONFIG_SMP
 	free_cpumask_var(mask);
 #endif
+
+done:
+	free_cpumask_var(mask);
 	mutex_unlock(&per_cpu(cpufreq_suspend, policy->cpu).suspend_mutex);
 	return ret;
 }
@@ -343,6 +353,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 #ifdef CONFIG_SMP
 	struct cpufreq_work_struct *cpu_work = NULL;
 #endif
+	struct cpufreq_work_struct *cpu_work = NULL;
 
 	if (cpu_is_apq8064())
 		return -ENODEV;
@@ -389,6 +400,10 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	INIT_WORK(&cpu_work->work, set_cpu_work);
 	init_completion(&cpu_work->complete);
 #endif
+
+	cpu_work = &per_cpu(cpufreq_work, policy->cpu);
+	INIT_WORK(&cpu_work->work, set_cpu_work);
+	init_completion(&cpu_work->complete);
 
 	return 0;
 }
@@ -493,6 +508,7 @@ static int __init msm_cpufreq_register(void)
 		return -EFAULT;
 	}
 
+	msm_cpufreq_wq = create_workqueue("msm-cpufreq");
 	register_hotcpu_notifier(&msm_cpufreq_cpu_notifier);
 #endif
 
