@@ -21,6 +21,10 @@
 #include "kgsl_device.h"
 #include "kgsl_trace.h"
 
+#ifdef CONFIG_KGSL_GPU_CTRL
+#include <linux/gpu_freq.h>
+#endif
+
 #define KGSL_PWRFLAGS_POWER_ON 0
 #define KGSL_PWRFLAGS_CLK_ON   1
 #define KGSL_PWRFLAGS_AXI_ON   2
@@ -95,8 +99,7 @@ void kgsl_pwrctrl_pwrlevel_change(struct kgsl_device *device,
 		int level = pwr->active_pwrlevel;
 		/* Update the clock stats */
 		update_clk_statistics(device, true);
-		/* Finally set active level */
-		pwr->active_pwrlevel = new_level;
+
 		if ((test_bit(KGSL_PWRFLAGS_CLK_ON, &pwr->power_flags)) ||
 			(device->state == KGSL_STATE_NAP)) {
 			/*
@@ -111,10 +114,24 @@ void kgsl_pwrctrl_pwrlevel_change(struct kgsl_device *device,
 			 * avoid glitches.
 			 */
 			while (level != new_level) {
-				level += d;
-				clk_set_rate(pwr->grp_clks[0],
+#ifdef CONFIG_KGSL_GPU_CTRL
+				if(diff == 1) {
+					// let the GPU scale down nautrally
+					clk_set_rate(pwr->grp_clks[0],
 						pwr->pwrlevels[level].gpu_freq);
+				} else {
+					// when scaling up, adhere to the max 3D level
+					if(pwr->num_pwrlevels == 7)
+						if (level <= gpu_3d_freq_phase)
+							break;
+				}	
+#endif
+			level += d;
+			clk_set_rate(pwr->grp_clks[0],
+					pwr->pwrlevels[level].gpu_freq);
 			}
+			/* Finally set active level */
+			pwr->active_pwrlevel = level;
 		}
 		if (test_bit(KGSL_PWRFLAGS_AXI_ON, &pwr->power_flags)) {
 			if (pwr->pcl)
