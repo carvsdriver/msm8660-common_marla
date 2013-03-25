@@ -265,9 +265,6 @@ done:
 #ifdef CONFIG_SMP
 	free_cpumask_var(mask);
 #endif
-
-done:
-	free_cpumask_var(mask);
 	mutex_unlock(&per_cpu(cpufreq_suspend, policy->cpu).suspend_mutex);
 	return ret;
 }
@@ -353,7 +350,6 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 #ifdef CONFIG_SMP
 	struct cpufreq_work_struct *cpu_work = NULL;
 #endif
-	struct cpufreq_work_struct *cpu_work = NULL;
 
 	if (cpu_is_apq8064())
 		return -ENODEV;
