@@ -336,7 +336,7 @@ static int smb137b_start_charging(struct msm_hardware_charger *hw_chg,
 		cmd_val |= USBIN_MODE_500_BIT;
 	else
 		cmd_val |= USBIN_MODE_HCMODE_BIT;
-
+	printk("Trace message for testing.");
 	smb137b_chg->chgcurrent = chg_current;
 	smb137b_chg->cur_charging_mode = cmd_val;
 
