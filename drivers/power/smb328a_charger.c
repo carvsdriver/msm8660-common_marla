@@ -282,7 +282,7 @@ static void smb328a_charger_function_conrol(struct i2c_client *client)
 #ifdef CONFIG_FORCE_FAST_CHARGE
 		if (force_fast_charge != 0) {
 			set_data = 0x97;
-		else if(chip->chg_mode == CHG_MODE_AC) {
+		} else if(chip->chg_mode == CHG_MODE_AC) {
 #else
 		if (chip->chg_mode == CHG_MODE_AC) {
 #endif
