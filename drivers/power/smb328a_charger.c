@@ -794,7 +794,14 @@ static int smb328a_set_charging_current(struct i2c_client *client,
 
 	chip->chg_set_current = chg_current;
 
+#ifdef CONFIG_FORCE_FAST_CHG
+	if (config_fast_charge != 0) {
+		chip->chg_mode = CHG_MODE_AC;
+	}
+	else if (chg_current == 500 {
+#else
 	if (chg_current == 500) {
+#endif
 		chip->chg_mode = CHG_MODE_USB;
 	} else if (chg_current == 900) {
 		chip->chg_mode = CHG_MODE_AC;

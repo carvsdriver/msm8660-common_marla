@@ -43,9 +43,6 @@
 #include <mach/msm_xo.h>
 #include <mach/msm_bus.h>
 
-#ifdef CONFIG_FORCE_FAST_CHARGE
-#include <linux/fastchg.h>
-#endif
 #define MSM_USB_BASE	(motg->regs)
 #define DRIVER_NAME	"msm_otg"
 
@@ -907,13 +904,7 @@ static int msm_otg_notify_chg_type(struct msm_otg *motg)
 	if (charger_type == motg->chg_type)
 		return 0;
 
-#ifdef CONFIG_FAST_CHARGE
-	if (fast_charge != 0)
-		charger_type = POWER_SUPPLY_TYPE_USB_ACA;
-	else if (motg->chg_type == USB_SDP_CHARGER)
-#else
 	if (motg->chg_type == USB_SDP_CHARGER)
-#endif
 		charger_type = POWER_SUPPLY_TYPE_USB;
 	else if (motg->chg_type == USB_CDP_CHARGER)
 		charger_type = POWER_SUPPLY_TYPE_USB_CDP;
@@ -932,12 +923,6 @@ static int msm_otg_notify_chg_type(struct msm_otg *motg)
 
 static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 {
-#ifdef CONFIG_FORCE_FAST_CHARGE
-	if (fast_charge != 0) {
-		mA = IDEV_ACA_CHG_LIMIT;
-		printk("USB fast charge is set to %d.\n", mA);
-	}
-#endif
 	if ((motg->chg_type == USB_ACA_DOCK_CHARGER ||
 		motg->chg_type == USB_ACA_A_CHARGER ||
 		motg->chg_type == USB_ACA_B_CHARGER ||
