@@ -25,6 +25,10 @@
 #include <linux/smb328a_charger.h>
 #include <linux/i2c/fsa9480.h>
 
+#ifdef CONFIG_FORCE_FAST_CHARGE
+#include <linux/fastchg.h>
+#endif
+
 /* Register define */
 #define SMB328A_INPUT_AND_CHARGE_CURRENTS	0x00
 #define	SMB328A_CURRENT_TERMINATION			0x01
@@ -275,7 +279,13 @@ static void smb328a_charger_function_conrol(struct i2c_client *client)
 		data = (u8)val;
 		dev_info(&client->dev, "%s : reg (0x%x) = 0x%x\n",
 			__func__, reg, data);
+#ifdef CONFIG_FORCE_FAST_CHARGE
+		if (force_fast_charge != 0) {
+			set_data = 0x97;
+		else if(chip->chg_mode == CHG_MODE_AC) {
+#else
 		if (chip->chg_mode == CHG_MODE_AC) {
+#endif
 #if defined (CONFIG_USA_MODEL_SGH_I717)
 			set_data = 0xB7; /* fast 1A */
 #else
@@ -1279,7 +1289,11 @@ static int smb328a_enable_charging(struct i2c_client *client)
 		data = (u8)val;
 		dev_info(&client->dev, "%s : reg (0x%x) = 0x%x\n",
 									__func__, reg, data);
+#ifdef CONFIG_FORCE_FAST_CHARGE
+		if (force_fast_charge != 0 || chip->chg_mode == CHG_MODE_AC ||
+#else
 		if (chip->chg_mode == CHG_MODE_AC ||
+#endif
 			chip->chg_mode == CHG_MODE_MISC||
 			chip->chg_mode == CHG_MODE_UNKNOWN)
 			data = 0xad;
