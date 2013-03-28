@@ -29,9 +29,6 @@
 
 #include <mach/msm_hsusb.h>
 
-#ifdef CONFIG_FORCE_FAST_CHARGE
-#include <linux/fastchg.h>
-#endif
 #define MSM_CHG_MAX_EVENTS		16
 #define CHARGING_TEOC_MS		9000000
 #define UPDATE_TIME_MS			60000
@@ -1116,11 +1113,6 @@ int msm_charger_register(struct msm_hardware_charger *hw_chg)
 
 	priv->psy.name = hw_chg->name;
 	if (hw_chg->type == CHG_TYPE_USB)
-#ifdef CONFIG_FORCE_FAST_CHARGE
-		if (force_fast_charge != 0)
-			priv->psy.type = POWER_SUPPLY_TYPE_MAINS;
-		else
-#endif
 		priv->psy.type = POWER_SUPPLY_TYPE_USB;
 	else
 		priv->psy.type = POWER_SUPPLY_TYPE_MAINS;
