@@ -513,7 +513,6 @@ static int msm_start_charging(void)
 	wake_lock(&msm_chg.wl);
 	ret = priv->hw_chg->start_charging(priv->hw_chg, msm_chg.max_voltage,
 					 priv->max_source_current);
-	printk("CvD: Charge current: %d, Charge voltage: %d\n", priv->max_source_current, msm_chg.max_voltage);
 	if (ret) {
 		wake_unlock(&msm_chg.wl);
 		dev_err(msm_chg.dev, "%s couldnt start chg error = %d\n",
