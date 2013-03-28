@@ -314,7 +314,13 @@ static void smb328a_charger_function_conrol(struct i2c_client *client)
 		data = (u8)val;
 		dev_info(&client->dev, "%s : reg (0x%x) = 0x%x\n",
 			__func__, reg, data);
-		if (chip->chg_mode == CHG_MODE_AC) {
+#ifdef CONFIG_FORCE_FAST_CHARGE
+                if (force_fast_charge != 0) {
+                        set_data = 0xb0;
+                } else if(chip->chg_mode == CHG_MODE_AC) {
+#else
+                if (chip->chg_mode == CHG_MODE_AC) {
+#endif
 			set_data = 0xb0; /* input 1A */
 		} else if (chip->chg_mode == CHG_MODE_MISC) {
 			set_data = 0x50; /* input 700mA */
@@ -1071,10 +1077,13 @@ static int smb328a_adjust_float_voltage(struct i2c_client *client,
 
 	dev_info(&client->dev, "%s : \n", __func__);
 
-	if (chip->chg_mode != CHG_MODE_AC) {
-		pr_err("%s: not AC, return!\n", __func__);
-		return -EINVAL;
-	}
+#ifdef CONFIG_FORCE_FAST_CHARGE
+	if (force_fast_charge == 0)
+#endif
+		if (chip->chg_mode != CHG_MODE_AC) {
+			pr_err("%s: not AC, return!\n", __func__);
+			return -EINVAL;
+		}
 	
 	if (float_voltage < 3460 || float_voltage > 4720) {
 		pr_err("%s: invalid set data\n", __func__);
