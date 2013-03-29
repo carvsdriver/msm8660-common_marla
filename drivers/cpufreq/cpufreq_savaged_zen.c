@@ -60,6 +60,7 @@ static struct workqueue_struct *down_wq;
 static struct work_struct freq_scale_work;
 
 static cpumask_t work_cpumask;
+static spinlock_t cpumask_lock;
 static unsigned int suspended;
 
 enum {
@@ -185,6 +186,12 @@ static void reset_timer(unsigned long cpu, struct savagedzen_info_s *this_savage
   this_savagedzen->time_in_idle = get_cpu_idle_time_us(cpu, &this_savagedzen->idle_exit_time);
   mod_timer(&this_savagedzen->timer, jiffies + sample_rate_jiffies);
 }
+inline static void work_cpumask_set(unsigned long cpu) {
+	unsigned long flags;
+	spin_lock_irqsave(&cpumask_lock, flags);
+	cpumask_set_cpu(cpu, &work_cpumask);
+	spin_unlock_irqrestore(&cpumask_lock, flags);
+}
 
 inline static int work_cpumask_test_and_clear(unsigned long cpu) {
 	unsigned long flags;
@@ -244,7 +251,8 @@ static void cpufreq_savagedzen_timer(unsigned long data)
 
 
                 this_savagedzen->force_ramp_up = 1;
-                cpumask_set_cpu(data, &work_cpumask);
+				work_cpumask_set(cpu);
+                //cpumask_set_cpu(data, &work_cpumask);
                 queue_work(up_wq, &freq_scale_work);
                 return;
         }
@@ -268,8 +276,8 @@ static void cpufreq_savagedzen_timer(unsigned long data)
          */
         if (cputime64_sub(update_time, this_savagedzen->freq_change_time) < down_rate_us)
                 return;
-
-        cpumask_set_cpu(data, &work_cpumask);
+		work_cpumask_set(cpu);
+        //cpumask_set_cpu(data, &work_cpumask);
         queue_work(down_wq, &freq_scale_work);
 }
 
