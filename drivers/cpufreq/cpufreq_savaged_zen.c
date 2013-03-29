@@ -721,7 +721,7 @@ static int __init cpufreq_savagedzen_init(void)
                 init_timer_deferrable(&this_savagedzen->timer);
                 this_savagedzen->timer.function = cpufreq_savagedzen_timer;
                 this_savagedzen->timer.data = i;
-				work_cpumask_test_and_clear();
+				work_cpumask_test_and_clear(i);
         }
 
         /* Scale up is high priority */
