@@ -655,6 +655,7 @@ CONFIG_CMDLINE=""
 #
 # CPU Power Management
 #
+CONFIG_CONFIG_MSM_MPDEC=y
 
 #
 # CPU Frequency scaling
