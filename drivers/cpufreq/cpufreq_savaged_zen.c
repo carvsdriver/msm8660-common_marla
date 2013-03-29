@@ -593,13 +593,15 @@ static int cpufreq_governor_savagedzen(struct cpufreq_policy *new_policy,
                  * Do not register the idle hook and create sysfs
                  * entries if we have already done so.
                  */
-                if (atomic_inc_return(&active_count) <= 1) {
-                        rc = sysfs_create_group(&new_policy->kobj, &savagedzen_attr_group);
-                        if (rc)
-                                return rc;
-                        pm_idle_old = pm_idle;
-                        pm_idle = cpufreq_idle;
-                }
+                if (atomic_inc_return(&active_count) > 1) 
+			return 0;
+
+                rc = sysfs_create_group(&new_policy->kobj, &savagedzen_attr_group);
+                if (rc)
+                        return rc;
+
+                pm_idle_old = pm_idle;
+                pm_idle = cpufreq_idle;
 
                 this_savagedzen->cur_policy = new_policy;
                 this_savagedzen->enable = 1;
@@ -619,7 +621,7 @@ static int cpufreq_governor_savagedzen(struct cpufreq_policy *new_policy,
                 del_timer(&this_savagedzen->timer);
                 this_savagedzen->enable = 0;
 
-                if (atomic_dec_return(&active_count) > 1)
+                if (atomic_dec_return(&active_count) > 0)
                         return 0;
                 sysfs_remove_group(&new_policy->kobj,
                                 &savagedzen_attr_group);
