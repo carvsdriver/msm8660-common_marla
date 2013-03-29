@@ -77,7 +77,6 @@ config CPU_FREQ_DEFAULT_GOV_SAVAGEDZEN
 	select CPU_FREQ_GOV_PERFORMANCE
 	help
 	 use the CPUFreq governor 'savagedzen'
->>>>>>> 82589a9... cpufreq: savaged zen
 
 config CPU_FREQ_DEFAULT_GOV_BADASS
   bool "badass"
