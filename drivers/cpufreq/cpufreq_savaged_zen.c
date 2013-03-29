@@ -186,6 +186,15 @@ static void reset_timer(unsigned long cpu, struct savagedzen_info_s *this_savage
   mod_timer(&this_savagedzen->timer, jiffies + sample_rate_jiffies);
 }
 
+inline static int work_cpumask_test_and_clear(unsigned long cpu) {
+	unsigned long flags;
+	int res = 0;
+	spin_lock_irqsave(&cpumask_lock, flags);
+	res = cpumask_test_and_clear_cpu(cpu, &work_cpumask);
+	spin_unlock_irqrestore(&cpumask_lock, flags);
+	return res;
+}
+
 static void cpufreq_savagedzen_timer(unsigned long data)
 {
         u64 delta_idle;
