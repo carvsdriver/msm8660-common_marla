@@ -594,7 +594,7 @@ static int cpufreq_governor_savagedzen(struct cpufreq_policy *new_policy,
                  * entries if we have already done so.
                  */
                 if (atomic_inc_return(&active_count) > 1) 
-			return 0;
+					return 0;
 
                 rc = sysfs_create_group(&new_policy->kobj, &savagedzen_attr_group);
                 if (rc)
@@ -700,6 +700,8 @@ static int __init cpufreq_savagedzen_init(void)
         max_cpu_load = DEFAULT_MAX_CPU_LOAD;
         min_cpu_load = DEFAULT_MIN_CPU_LOAD;
 
+		spin_lock_init(&cpumask_lock);
+
         suspended = 0;
 
         /* Initalize per-cpu data: */
@@ -719,11 +721,15 @@ static int __init cpufreq_savagedzen_init(void)
                 init_timer_deferrable(&this_savagedzen->timer);
                 this_savagedzen->timer.function = cpufreq_savagedzen_timer;
                 this_savagedzen->timer.data = i;
+				work_cpumask_test_and_clear();
         }
 
         /* Scale up is high priority */
         up_wq = create_workqueue("ksavagedzen_up");
         down_wq = create_workqueue("ksavagedzen_down");
+
+		if(!up_wq || !down_wq)
+			return -ENOMEM;
 
         INIT_WORK(&freq_scale_work, cpufreq_savagedzen_freq_change_time_work);
 
