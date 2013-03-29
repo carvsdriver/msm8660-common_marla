@@ -690,7 +690,10 @@ static void savagedzen_early_suspend(struct early_suspend *handler) {
 
 static void savagedzen_late_resume(struct early_suspend *handler) {
         int i;
-        suspended = 0;
+		if (!suspended) // already not suspended so nothing to do
+				return;
+
+		suspended = 0;
         for_each_online_cpu(i)
                 savagedzen_suspend(i,0);
 }
