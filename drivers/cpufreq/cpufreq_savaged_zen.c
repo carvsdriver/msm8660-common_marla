@@ -251,7 +251,7 @@ static void cpufreq_savagedzen_timer(unsigned long data)
 
 
                 this_savagedzen->force_ramp_up = 1;
-				work_cpumask_set(cpu);
+				work_cpumask_set(data);
                 //cpumask_set_cpu(data, &work_cpumask);
                 queue_work(up_wq, &freq_scale_work);
                 return;
@@ -276,7 +276,7 @@ static void cpufreq_savagedzen_timer(unsigned long data)
          */
         if (cputime64_sub(update_time, this_savagedzen->freq_change_time) < down_rate_us)
                 return;
-		work_cpumask_set(cpu);
+		work_cpumask_set(data);
         //cpumask_set_cpu(data, &work_cpumask);
         queue_work(down_wq, &freq_scale_work);
 }
