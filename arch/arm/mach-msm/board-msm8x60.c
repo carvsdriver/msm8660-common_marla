@@ -115,6 +115,10 @@ int set_two_phase_freq_badass(int cpufreq);
 int set_three_phase_freq_badass(int cpufreq);
 #endif
 
+#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
+int set_two_phase_freq(int cpufreq);
+#endif
+
 #define MSM_SHARED_RAM_PHYS 0x40000000
 #define MDM2AP_SYNC 129
 
@@ -10407,6 +10411,10 @@ static void __init msm8x60_init(struct msm_board_data *board_data)
 #endif
 #ifdef CONFIG_FREQ_CPU_GOV_BADASS_3_PHASE
 	set_three_phase_freq_badass(CONFIG_CPU_FREQ_GOV_BADASS_3_PHASE_FREQ);
+#endif
+
+#ifdef CONFIG_CPU_FREQ_GOV_ONDEMAND_2_PHASE
+	set_two_phase_freq(CONFIG_CPU_FREQ_ONDEMAND_2_PHASE_FREQ);
 #endif
 
 	msm8x60_init_tlmm();
