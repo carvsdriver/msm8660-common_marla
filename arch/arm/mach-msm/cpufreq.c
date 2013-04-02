@@ -45,7 +45,7 @@ struct cpufreq_work_struct {
 /* Because we are hotplugging CPU1 using mpdecision, init should
    not change min/max after initial fixup to accomodate user changes */
 int cpuinitcount = 0;
-#define NUM_CORES = 2;
+#define CONFIG_NR_CPUS = 2;
 #endif
 
 static DEFINE_PER_CPU(struct cpufreq_work_struct, cpufreq_work);
