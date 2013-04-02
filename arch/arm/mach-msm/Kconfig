@@ -1361,6 +1361,13 @@ config KGSL_GPU_CTRL
 
 if CPU_FREQ_MSM
 
+config MSM_MPDEC
+	bool "Use MSM MPDecision"
+	default y
+	help
+	  Allow auto hotplugging of CPU cores on multi
+	  core chipsets.
+
 config MSM_CPU_FREQ_SET_MIN_MAX
 	bool "Set Min/Max CPU frequencies."
 	default n
