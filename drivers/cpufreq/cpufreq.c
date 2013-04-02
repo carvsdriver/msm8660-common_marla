@@ -1260,10 +1260,10 @@ static int __cpufreq_remove_dev(struct sys_device *sys_dev)
 			pr_debug("Saving CPU%d policy min %d and max %d\n",
 					j, data->min, data->max);
 
-                        per_cpu(cpufreq_policy_save, j).user_min = data->user_policy.min;
-                        per_cpu(cpufreq_policy_save, j).user_max = data->user_policy.max;
+                        per_cpu(cpufreq_policy_save, j).user_min = data->policy_user.min;
+                        per_cpu(cpufreq_policy_save, j).user_max = data->policy_user.max;
                         pr_debug("Saving CPU%d policy user_min %d and user_max %d\n",
-                                        j, data->user_policy.min, data->user_policy.max);
+                                        j, data->policy_user.min, data->policy_user.max);
 
 #endif
 			cpu_sys_dev = get_cpu_sysdev(j);
