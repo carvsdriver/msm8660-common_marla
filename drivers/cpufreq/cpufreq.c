@@ -445,13 +445,13 @@ static ssize_t store_scaling_max_freq
 	if (ret != 1)							
 		return -EINVAL;
 
-	if (policy->cpu == BOOT_CPU) 
-{									
+	//if (policy->cpu == BOOT_CPU) 
+	//{									
 		if (value >= MAX_FREQ_LIMIT)
 			set_freq_limit(DVFS_THERMALD_ID, -1);
 		else if (value >= MIN_FREQ_LIMIT)
 			set_freq_limit(DVFS_THERMALD_ID, value);
-	}
+	//}
 
 	return count;
 }
