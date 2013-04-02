@@ -19,6 +19,7 @@ obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUG)    += cpufreq_lionheart.o
 
 # CPUfreq cross-arch helpers
 obj-$(CONFIG_CPU_FREQ_TABLE)		+= freq_table.o
+obj-$(CONFIG_LINK_CPU_GOVERNORS)	+= cpugovsync.o
 
 ##################################################################################d
 # x86 drivers.
