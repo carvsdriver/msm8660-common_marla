@@ -70,7 +70,7 @@ static unsigned int hispeed_freq;
 static u64 boostpulse_boosted_time;
 
 /* How long the boostpulse will remain active */
-#define DEFAULT_BOOSTPULSE_DURATION    500000
+#define DEFAULT_BOOSTPULSE_DURATION    		500000
 #define MAX_BOOSTPULSE_DURATION                5000000
 static int boostpulse_duration;
 
