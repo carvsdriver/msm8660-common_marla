@@ -22,7 +22,6 @@
 #ifdef QCT_SWITCH_STATE_CMD
 #include <linux/switch.h>
 #endif
-#include <video/msm_hdmi_modes.h>
 
 #define DEV_INFO_ENA
 
@@ -44,7 +43,6 @@
 #define DEV_ERR(args...)	 do {} while (0)
 #endif
 
-<<<<<<< HEAD
 #ifdef CONFIG_FB_MSM_TVOUT
 #define TVOUT_VFRMT_NTSC_M_720x480i		0
 #define TVOUT_VFRMT_NTSC_J_720x480i		1
@@ -223,15 +221,11 @@ struct hdmi_disp_mode_timing_type {
 #define HDMI_SETTINGS_1920x1080p30_16_9					\
 	{HDMI_VFRMT_1920x1080p30_16_9,   1920,  88,   44,  148,  FALSE,	\
 	 1080, 4, 5, 36, FALSE, 74250, 30000, FALSE, TRUE}
-=======
-#if defined(CONFIG_FB_MSM_HDMI_COMMON)
-extern int ext_resolution;
->>>>>>> a0d8de3... msm_fb: hdmi: Use common header for resolution modes
 
 /* A lookup table for all the supported display modes by the HDMI
  * hardware and driver.  Use HDMI_SETUP_LUT in the module init to
  * setup the LUT with the supported modes. */
-extern struct msm_hdmi_mode_timing_info
+extern struct hdmi_disp_mode_timing_type
 	hdmi_common_supported_video_mode_lut[HDMI_VFRMT_MAX];
 
 /* Structure that encapsulates all the supported display modes by the HDMI sink
@@ -276,14 +270,23 @@ extern struct mutex external_common_state_hpd_mutex;
 extern struct mutex hdmi_msm_state_mutex;
 
 #ifdef CONFIG_FB_MSM_HDMI_COMMON
+#define VFRMT_NOT_SUPPORTED(VFRMT) \
+	{VFRMT, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FALSE}
+#define HDMI_SETUP_LUT(MODE) do {					\
+		struct hdmi_disp_mode_timing_type mode			\
+			= HDMI_SETTINGS_ ## MODE;			\
+		hdmi_common_supported_video_mode_lut[mode.video_format]	\
+			= mode;						\
+	} while (0)
+
 int hdmi_common_read_edid(void);
 const char *video_format_2string(uint32 format);
 bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd);
-const struct msm_hdmi_mode_timing_info *hdmi_common_get_mode(uint32 mode);
-const struct msm_hdmi_mode_timing_info *hdmi_common_get_supported_mode(
+const struct hdmi_disp_mode_timing_type *hdmi_common_get_mode(uint32 mode);
+const struct hdmi_disp_mode_timing_type *hdmi_common_get_supported_mode(
 	uint32 mode);
-const struct msm_hdmi_mode_timing_info *hdmi_mhl_get_mode(uint32 mode);
-const struct msm_hdmi_mode_timing_info *hdmi_mhl_get_supported_mode(
+const struct hdmi_disp_mode_timing_type *hdmi_mhl_get_mode(uint32 mode);
+const struct hdmi_disp_mode_timing_type *hdmi_mhl_get_supported_mode(
 	uint32 mode);
 void hdmi_common_init_panel_info(struct msm_panel_info *pinfo);
 #endif
