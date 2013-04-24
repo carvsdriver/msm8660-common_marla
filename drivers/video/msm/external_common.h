@@ -44,7 +44,6 @@
 #define DEV_ERR(args...)	 do {} while (0)
 #endif
 
-<<<<<<< HEAD
 #ifdef CONFIG_FB_MSM_TVOUT
 #define TVOUT_VFRMT_NTSC_M_720x480i		0
 #define TVOUT_VFRMT_NTSC_J_720x480i		1
@@ -223,10 +222,8 @@ struct hdmi_disp_mode_timing_type {
 #define HDMI_SETTINGS_1920x1080p30_16_9					\
 	{HDMI_VFRMT_1920x1080p30_16_9,   1920,  88,   44,  148,  FALSE,	\
 	 1080, 4, 5, 36, FALSE, 74250, 30000, FALSE, TRUE}
-=======
 #if defined(CONFIG_FB_MSM_HDMI_COMMON)
 extern int ext_resolution;
->>>>>>> a0d8de3... msm_fb: hdmi: Use common header for resolution modes
 
 /* A lookup table for all the supported display modes by the HDMI
  * hardware and driver.  Use HDMI_SETUP_LUT in the module init to
